@@ -1,20 +1,23 @@
-import React from 'react';
+import React from "react";
+import { Text } from "../Text";
 
-import { Input, Label, Indicator, IndicatorRadio } from './styles';
+import { Input, Label, Indicator, IndicatorRadio, WrapperLabel } from "./styles";
 
 export interface CheckboxProps extends React.HTMLAttributes<HTMLInputElement> {
-  name?: string;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  checked?: false | boolean;
-  disabled?: false | boolean;
-  type?: 'checkbox' | 'radio';
   id?: any;
+  name?: string;
+  type?: "checkbox" | "radio";
+  label?: string;
+  checked?: false | boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: false | boolean;
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({
   id,
   name,
   type,
+  label,
   checked,
   onChange,
   disabled,
@@ -30,11 +33,12 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         onChange={onChange}
         disabled={disabled}
       />
-      {type === 'radio' ? (
+      {type === "radio" ? (
         <IndicatorRadio checked={checked} id={id} disabled={disabled} />
       ) : (
         <Indicator checked={checked} id={id} disabled={disabled} />
       )}
+      <WrapperLabel>{label}</WrapperLabel>
     </Label>
   );
 };

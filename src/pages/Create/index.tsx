@@ -2,17 +2,115 @@ import { useState } from "react";
 
 import { Header } from "../../components/Header";
 import { Checkbox } from "../../components/Checkbox";
-import { Text } from "../../components/Text";
+import { useFormik } from "formik";
 
 import { WrapperTypePerson } from "./styles";
+import { FormCoporate } from "./Steps/Corporate";
+import { FormIndividual } from "./Steps/Individual";
+import { CustomerServiceSkeleton } from "../../services/Customer/services/implementations/CustomerServiceSkeleton";
 
 const notificationMethods = [
   { id: "pj", name: "type-person", title: "Pessoa Jurídica" },
   { id: "pf", name: "type-person", title: "Pessoa Física" },
 ];
 
-export const CreateCustomer = () => {
-  const [checked, setChecked] = useState(false);
+interface ICreatePageProps {
+  customerService: CustomerServiceSkeleton;
+}
+
+export const CreateCustomer = ({
+  customerService: services,
+}: ICreatePageProps) => {
+  const [customerService] = useState<CustomerServiceSkeleton>(services);
+
+  const [whatKindOfPerson, setWhatKindOfPerson] = useState("Pessoa Jurídica");
+
+  const [isCheckboxCorporateActive, setIsCheckboxCorporateActive] =
+    useState(false);
+  const [hasRadioContribuition, setHasRadioContribuition] = useState("Sim");
+
+  const formCorporate = useFormik({
+    initialValues: {
+      razaoSocial: "",
+      nomeFantasia: "",
+      cnpj: "",
+      ativo: false,
+      contribuinte: "",
+      inscricaoEstadual: "",
+      inscricaoMunicipal: "",
+      email: "",
+      nomeResponsavel: "",
+      cpf: "",
+      dataNascimento: "",
+      telefone: "",
+      celular: "",
+      emailResponsavel: "",
+      cep: "",
+      cidade: "",
+      uf: "",
+      endereço: "",
+      numero: "",
+      complemento: "",
+      bairro: "",
+      observacao: "",
+    },
+    // validationSchema: loginSchema,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+  const {
+    values: valuesFormCorporate,
+    handleChange: handleChangeFormCorporate,
+    touched: touchedFormCorporate,
+    errors: errorsFormCorporate,
+  } = formCorporate;
+
+  const formIndividual = useFormik({
+    initialValues: {
+      nome: "",
+      apelido: "",
+      cpf: "",
+      dataNascimento: "",
+      estadoCivil: "",
+      rg: "",
+      orgaoEmissor: "",
+      ufRg: "",
+      cnh: "",
+      seguranca: "",
+      cei: "",
+      email: "",
+      telefone: "",
+      celular: "",
+      cep: "",
+      cidade: "",
+      uf: "",
+      endereco: "",
+      numero: "",
+      complemento: "",
+      bairro: "",
+      observacao: "",
+    },
+    // validationSchema: loginSchema,
+    onSubmit: async (values) => {
+      console.log(values);
+
+      try {
+        await customerService.createIndividualCustomer({
+          type: "PF",
+          ...values,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
+  const {
+    values: valuesFormIndividual,
+    handleChange: handleFormIndividual,
+    touched: touchedFormIndividual,
+    errors: errorsFormIndividual,
+  } = formIndividual;
 
   return (
     <div className="flex flex-col items-start">
@@ -23,23 +121,50 @@ export const CreateCustomer = () => {
       <WrapperTypePerson>
         <div>
           {notificationMethods.map(({ id, name, title }) => (
-            <div>
-              <Checkbox
-                id={id}
-                name={name}
-                checked={!checked}
-                onChange={() => setChecked(!checked)}
-                type="radio"
-              />
-              <Text variant="h7" weight="medium">
-                {name}
-              </Text>
-            </div>
+            <Checkbox
+              key={id}
+              id={id}
+              name={name}
+              type="radio"
+              label={title}
+              checked={whatKindOfPerson === title}
+              onChange={() => setWhatKindOfPerson(title)}
+            />
           ))}
         </div>
       </WrapperTypePerson>
 
-      <div></div>
+      <div>
+        {whatKindOfPerson === "Pessoa Jurídica" ? (
+          <>
+            <form onSubmit={formCorporate.handleSubmit}>
+              <FormCoporate
+                values={valuesFormCorporate}
+                handleChange={handleChangeFormCorporate}
+                touched={touchedFormCorporate}
+                errors={errorsFormCorporate}
+                isCheckboxCorporateActive={isCheckboxCorporateActive}
+                setIsCheckboxCorporateActive={setIsCheckboxCorporateActive}
+                hasRadioContribuition={hasRadioContribuition}
+                setHasRadioContribuition={setHasRadioContribuition}
+              />
+              <button type="submit">Enviar</button>
+            </form>
+          </>
+        ) : (
+          <>
+            <form onSubmit={formIndividual.handleSubmit}>
+              <FormIndividual
+                values={valuesFormIndividual}
+                handleChange={handleFormIndividual}
+                touched={touchedFormIndividual}
+                errors={errorsFormIndividual}
+              />
+              <button type="submit">Enviar</button>
+            </form>
+          </>
+        )}
+      </div>
     </div>
   );
 };

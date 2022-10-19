@@ -22,7 +22,7 @@ export const popIn = keyframes`
 
 export const Label = styled.label<CheckboxProps>`
   position: relative;
-  display: inline-block;
+  display: flex;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   margin: 1em;
   font-size: 16px;
@@ -105,3 +105,7 @@ export const IndicatorRadio = styled(Indicator)`
     border-radius: 1em;
   }
 `;
+
+export const WrapperLabel = styled.div`
+  margin-left: 16px;
+`

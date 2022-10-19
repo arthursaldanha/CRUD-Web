@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 import { BsPlusCircle } from "react-icons/bs";
 
@@ -8,9 +9,40 @@ import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 
 import { WrapperFunctions, WrapperHome, WrapperTableCustomers } from "./styles";
+import { CustomerServiceSkeleton } from "../../services/Customer/services/implementations/CustomerServiceSkeleton";
+import {
+  ICorporateCustomerGeneral,
+  IIndividualCustomerGeneral,
+} from "../../services/Customer/models";
 
-export const Home = () => {
+interface IHomePageProps {
+  customerService: CustomerServiceSkeleton;
+}
+
+export const Home = ({ customerService: services }: IHomePageProps) => {
+  const [customerService] = useState<CustomerServiceSkeleton>(services);
+
   const [hasSearchItemsInTable, setHasSearchItemsInTable] = useState("");
+
+  const { isFetching, isLoading, data, remove } = useQuery<
+    (IIndividualCustomerGeneral & ICorporateCustomerGeneral)[]
+  >(
+    ["customers"],
+    async () => {
+      const response = await customerService.readAllCustomers();
+      return response;
+    },
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+      refetchOnMount: false,
+    }
+  );
+
+  if (isLoading) {
+    return <div />
+  }
 
   return (
     <WrapperHome>
@@ -45,17 +77,19 @@ export const Home = () => {
               <th align="left">Cel</th>
               <th align="left"></th>
             </tr>
-            {[1, 2, 3, 4].map((element) => (
-              <tr>
-                <td>14</td>
-                <td>Cerri & Santos Equipamentos Ind...</td>
-                <td>23.123.456/0001-01</td>
-                <td>assistech19@gmail.com</td>
-                <td>19 3456-7890</td>
-                <td>19 98765-4321</td>
-                <td></td>
-              </tr>
-            ))}
+            {data?.map(
+              ({ id, razaoSocial, nome, cpf, cnpj, email, telefone, celular }) => (
+                <tr>
+                  <td>{id}</td>
+                  <td>{razaoSocial || nome}</td>
+                  <td>{cnpj || cpf}</td>
+                  <td>{email}</td>
+                  <td>{telefone}</td>
+                  <td>{celular}</td>
+                  <td></td>
+                </tr>
+              )
+            )}
           </table>
         </WrapperTableCustomers>
       </div>
