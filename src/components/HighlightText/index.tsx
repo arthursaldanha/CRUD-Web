@@ -9,7 +9,7 @@ interface HighLightProps {
   color: string;
 }
 
-export const HightlightText = ({
+export const HighlightText = ({
   text,
   toHighlight,
   variant,

@@ -1,19 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { Form, Formik, useFormik } from "formik";
+import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { Header } from "../../components/Header";
 import {
   ICorporateCustomerGeneral,
   IIndividualCustomerGeneral,
 } from "../../domain/Customer/models";
-import { CustomerServiceSkeleton } from "../../domain/Customer/services/implementations/CustomerServiceSkeleton";
-import { TypeMaritalStatus, TypeUFOption } from "../Create";
+import { ButtonsForm, TypeMaritalStatus, TypeUFOption } from "../Create";
 import { FormCoporate } from "../Create/Steps/Corporate";
 import { FormIndividual } from "../Create/Steps/Individual";
+import { valuesInputEditCorporate, valuesInputEditIndividual } from "./initialValuesInputs";
 
 interface IEditPresentationProps {
-  customerService: CustomerServiceSkeleton;
+  customerToEdit: any;
+  isLoadingCustomerToEdit: boolean;
   onEditIndividualCustomer: (
     customerId: number,
     values: IIndividualCustomerGeneral
@@ -24,37 +23,20 @@ interface IEditPresentationProps {
   ) => any;
 }
 
-type Teste = IIndividualCustomerGeneral & ICorporateCustomerGeneral & any;
-
 export const EditCustomerPresentation = ({
-  customerService,
+  customerToEdit,
+  isLoadingCustomerToEdit,
   onEditIndividualCustomer,
   onEditCorporateCustomer,
 }: IEditPresentationProps) => {
-  const { id } = useParams();
-
-  const { isLoading, data } = useQuery<any>(
-    ["customer"],
-    async () => {
-      const response = await customerService.readUniqueCustomer(
-        Number(id) as number
-      );
-      return response;
-    },
-    {
-      keepPreviousData: false,
-      refetchOnWindowFocus: false,
-      refetchInterval: false,
-      refetchOnMount: false,
-    }
-  );
-
   // corporate states
   const [isCheckboxCorporateActive, setIsCheckboxCorporateActive] =
     useState(false);
   const [hasRadioContribuition, setHasRadioContribuition] = useState("");
   const [stateCustomerCorporateLiving, setStateCustomerCorporateLiving] =
     useState<TypeUFOption>({} as TypeUFOption);
+  const [observationFormComporate, setObservationFormComporate] =
+    useState<string>("");
 
   // individual states
   const [hasMaritalStatus, setHasMaritalStatus] = useState<TypeMaritalStatus>(
@@ -64,30 +46,34 @@ export const EditCustomerPresentation = ({
     useState<TypeUFOption>({} as TypeUFOption);
   const [stateCustomerIndividualLiving, setStateCustomerInidividualLiving] =
     useState<TypeUFOption>({} as TypeUFOption);
+  const [observationFormIndividual, setObservationFormIndividual] =
+    useState<string>("");
 
   useEffect(() => {
-    setIsCheckboxCorporateActive(data?.ativo as boolean);
-    setHasRadioContribuition(data?.contribuinte as string);
+    setIsCheckboxCorporateActive(customerToEdit?.ativo as boolean);
+    setHasRadioContribuition(customerToEdit?.contribuinte as string);
     setStateCustomerCorporateLiving({
-      label: data?.uf,
-      value: data?.uf,
+      label: customerToEdit?.uf,
+      value: customerToEdit?.uf,
     });
+    setObservationFormComporate(customerToEdit?.observacao);
 
     setHasMaritalStatus({
-      label: data?.estadoCivil,
-      value: data?.estadoCivil,
+      label: customerToEdit?.estadoCivil,
+      value: customerToEdit?.estadoCivil,
     });
     setStateDocumentIdentification({
-      label: data?.ufRg,
-      value: data?.ufRg,
+      label: customerToEdit?.ufRg,
+      value: customerToEdit?.ufRg,
     });
     setStateCustomerInidividualLiving({
-      label: data?.uf,
-      value: data?.uf,
+      label: customerToEdit?.uf,
+      value: customerToEdit?.uf,
     });
-  }, [data]);
+    setObservationFormIndividual(customerToEdit?.observacao);
+  }, [customerToEdit]);
 
-  if (isLoading) {
+  if (isLoadingCustomerToEdit) {
     return <div />;
   }
 
@@ -97,40 +83,17 @@ export const EditCustomerPresentation = ({
         <Header title="Cadastro / Clientes / Editar Clientes" />
 
         <div>
-          {data?.type === "PJ" ? (
+          {customerToEdit?.type === "PJ" ? (
             <Formik
-              initialValues={{
-                razaoSocial: data?.razaoSocial,
-                nomeFantasia: data?.nomeFantasia,
-                cnpj: data?.cnpj,
-                ativo: data?.ativo,
-                contribuinte: data?.contribuinte,
-                inscricaoEstadual: data?.inscricaoEstadual,
-                inscricaoMunicipal: data?.inscricaoMunicipal,
-                email: data?.email,
-                nomeResponsavel: data?.nomeResponsavel,
-                cpf: data?.cpf,
-                dataNascimento: data?.dataNascimento,
-                telefone: data?.telefone,
-                celular: data?.celular,
-                emailResponsavel: data?.emailResponsavel,
-                cep: data?.cep,
-                cidade: data?.cidade,
-                uf: data?.uf,
-                endereco: data?.endereco,
-                numero: data?.numero,
-                complemento: data?.complemento,
-                bairro: data?.bairro,
-                observacao: data?.observacao,
-              }}
+              initialValues={valuesInputEditCorporate(customerToEdit)}
               onSubmit={async (values) => {
-                console.log(values);
-
-                await onEditCorporateCustomer(data?.id, {
+                await onEditCorporateCustomer(customerToEdit?.id ?? 0, {
                   ...values,
+                  type: "PJ",
                   ativo: isCheckboxCorporateActive,
                   contribuinte: hasRadioContribuition,
-                  uf: stateCustomerCorporateLiving.value
+                  uf: stateCustomerCorporateLiving.value,
+                  observacao: observationFormComporate,
                 } as ICorporateCustomerGeneral);
               }}
             >
@@ -149,45 +112,24 @@ export const EditCustomerPresentation = ({
                     setStateCustomerCorporateLiving={
                       setStateCustomerCorporateLiving
                     }
+                    observationFormComporate={observationFormComporate}
+                    setObservationFormComporate={setObservationFormComporate}
                   />
-                  <button type="submit">Enviar</button>
+                  <ButtonsForm type="edit" />
                 </Form>
               )}
             </Formik>
           ) : (
             <Formik
-              initialValues={{
-                nome: data?.nome,
-                apelido: data?.apelido,
-                cpf: data?.cpf,
-                dataNascimento: data?.dataNascimento,
-                estadoCivil: data?.estadoCivil,
-                rg: data?.rg,
-                orgaoEmissor: data?.orgaoEmissor,
-                ufRg: data?.ufRg,
-                cnh: data?.cnh,
-                seguranca: data?.seguranca,
-                cei: data?.cei,
-                email: data?.email,
-                telefone: data?.telefone,
-                celular: data?.celular,
-                cep: data?.cep,
-                cidade: data?.cidade,
-                uf: data?.uf,
-                endereco: data?.endereco,
-                numero: data?.numero,
-                complemento: data?.complemento,
-                bairro: data?.bairro,
-                observacao: data?.observacao,
-              }}
+              initialValues={valuesInputEditIndividual(customerToEdit)}
               onSubmit={async (values) => {
-                console.log(values);
-
-                await onEditIndividualCustomer(data?.id, {
+                await onEditIndividualCustomer(customerToEdit?.id, {
                   ...values,
+                  type: "PF",
                   estadoCivil: hasMaritalStatus.value,
                   ufRg: stateDocumentIdentification.value,
                   uf: stateCustomerIndividualLiving.value,
+                  observacao: observationFormIndividual
                 } as IIndividualCustomerGeneral);
               }}
             >
@@ -206,8 +148,10 @@ export const EditCustomerPresentation = ({
                     }
                     stateCustomerLiving={stateCustomerIndividualLiving}
                     setStateCustomerLiving={setStateCustomerInidividualLiving}
+                    observationFormIndividual={observationFormIndividual}
+                    setObservationFormIndividual={setObservationFormIndividual}
                   />
-                  <button type="submit">Enviar</button>
+                  <ButtonsForm type="edit" />
                 </Form>
               )}
             </Formik>

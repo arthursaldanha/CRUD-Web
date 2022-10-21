@@ -1,14 +1,14 @@
+import { useEffect, useState } from "react";
+
 import { useNavigate, useParams } from "react-router-dom";
 
 import { EditCustomerPresentation } from "../presentation/Edit";
 
+import { CustomerServiceSkeleton } from "../domain/Customer/services/implementations/CustomerServiceSkeleton";
 import {
   IIndividualCustomerGeneral,
   ICorporateCustomerGeneral,
 } from "../domain/Customer/models";
-import { CustomerServiceSkeleton } from "../domain/Customer/services/implementations/CustomerServiceSkeleton";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 interface IEditPageProps {
   customerService: CustomerServiceSkeleton;
@@ -16,6 +16,25 @@ interface IEditPageProps {
 
 export const EditCustomerPage = ({ customerService }: IEditPageProps) => {
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [customerToEdit, setCustomerToEdit] = useState<
+    IIndividualCustomerGeneral | ICorporateCustomerGeneral
+  >();
+  const [isLoadingCustomerToEdit, setIsLoadingCustomerToEdit] =
+    useState<boolean>(true);
+
+  async function onReadUniqueCustomer(customerId: number) {
+    try {
+      setIsLoadingCustomerToEdit(true);
+      const customers = await customerService.readUniqueCustomer(customerId);
+      setCustomerToEdit(customers);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoadingCustomerToEdit(false);
+    }
+  }
 
   async function onEditIndividualCustomer(
     customerId: number,
@@ -43,9 +62,14 @@ export const EditCustomerPage = ({ customerService }: IEditPageProps) => {
     }
   }
 
+  useEffect(() => {
+    onReadUniqueCustomer(Number(id));
+  }, []);
+
   return (
     <EditCustomerPresentation
-      customerService={customerService}
+      customerToEdit={customerToEdit}
+      isLoadingCustomerToEdit={isLoadingCustomerToEdit}
       onEditIndividualCustomer={onEditIndividualCustomer}
       onEditCorporateCustomer={onEditCorporateCustomer}
     />

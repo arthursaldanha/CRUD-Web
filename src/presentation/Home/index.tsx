@@ -1,14 +1,9 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "styled-components";
 
 import { BsPlusCircle, BsFillPencilFill } from "react-icons/bs";
 
-import { Header } from "../../components/Header";
-import { Button } from "../../components/Button";
-import { Input } from "../../components/Input";
-import { Text } from "../../components/Text";
-import { HightlightText } from "../../components/HighlightText";
+import { Button, Header, Input, HighlightText, Text } from "../../components";
 
 import {
   DataTable,
@@ -20,52 +15,26 @@ import {
   WrapperTableCustomers,
 } from "./styles";
 
-import { CustomerServiceSkeleton } from "../../domain/Customer/services/implementations/CustomerServiceSkeleton";
+import { convertToLower } from "../../utils/string";
 import {
   ICorporateCustomerGeneral,
   IIndividualCustomerGeneral,
 } from "../../domain/Customer/models";
 
-import { convertToLower } from "../../utils/string";
-
 interface IHomePresentationProps {
-  customerService: CustomerServiceSkeleton;
+  allCustomers: (IIndividualCustomerGeneral & ICorporateCustomerGeneral)[];
+  isLoadingFetchingCustomers: boolean;
+  handleDeleteCustomer: (customerId: number) => void;
 }
 
 export const HomePresentation = ({
-  customerService: services,
+  allCustomers,
+  handleDeleteCustomer,
 }: IHomePresentationProps) => {
   const { colors } = useTheme();
 
-  const [customerService] = useState<CustomerServiceSkeleton>(services);
-
   const [hasSearchItemsInTable, setHasSearchItemsInTable] =
     useState<string>("");
-
-  const { isLoading, data, refetch } = useQuery<
-    (IIndividualCustomerGeneral & ICorporateCustomerGeneral)[]
-  >(
-    ["customers"],
-    async () => {
-      const response = await customerService.readAllCustomers();
-      return response;
-    },
-    {
-      keepPreviousData: true,
-      refetchOnWindowFocus: true,
-      refetchInterval: false,
-      refetchOnMount: false,
-    }
-  );
-
-  async function handleDeleteCustomer(customerId: number) {
-    await customerService.deleteCustomer(customerId);
-    refetch();
-  }
-
-  if (isLoading) {
-    return <div />;
-  }
 
   return (
     <WrapperHome>
@@ -100,7 +69,7 @@ export const HomePresentation = ({
               <th align="left">Cel</th>
               <th align="left">Ações</th>
             </HeadTable>
-            {data
+            {allCustomers
               ?.filter(
                 (element) =>
                   convertToLower(element?.razaoSocial ?? "").includes(
@@ -125,7 +94,7 @@ export const HomePresentation = ({
                     <td>{id}</td>
                     <td>
                       <Text variant="h7" weight="medium" color={colors.grey1}>
-                        <HightlightText
+                        <HighlightText
                           text={razaoSocial || nome}
                           toHighlight={hasSearchItemsInTable}
                           variant="h7"

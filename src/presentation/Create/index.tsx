@@ -1,12 +1,12 @@
 import { useState } from "react";
-
-import { Header } from "../../components/Header";
-import { Checkbox } from "../../components/Checkbox";
+import { NavLink } from "react-router-dom";
 import { useFormik } from "formik";
 
-import { WrapperTypePerson } from "./styles";
+import { Button, Checkbox, Header  } from "../../components";
+
 import { FormCoporate } from "./Steps/Corporate";
 import { FormIndividual } from "./Steps/Individual";
+
 import { CustomerServiceSkeleton } from "../../domain/Customer/services/implementations/CustomerServiceSkeleton";
 import {
   IIndividualCustomerGeneral,
@@ -16,7 +16,14 @@ import {
   maritalStatusOptions,
   ufOptions,
 } from "../../domain/Customer/models/common";
-import { createOrUpdateCorporateCustomer, createOrUpdateIndividualCustomer } from "../../domain/Customer/validations";
+import {
+  createOrUpdateCorporateCustomer,
+  createOrUpdateIndividualCustomer,
+} from "../../domain/Customer/validations";
+
+import { initialValuesFormCorporate, initialValuesFormIndividual } from "./initialValues";
+
+import { WrapperButtons, WrapperForm, WrapperTypePerson } from "./styles";
 
 const notificationMethods = [
   { id: "pj", name: "type-person", title: "Pessoa Jurídica" },
@@ -32,6 +39,25 @@ interface ICreatePresentationProps {
   onCreateCorporateCustomer: (values: ICorporateCustomerGeneral) => any;
 }
 
+interface IButtonsFormProps {
+  type: 'create' | 'edit'
+}
+
+export function ButtonsForm({ type }: IButtonsFormProps) {
+  return (
+    <WrapperButtons>
+      <NavLink to="/">
+        <Button type="button" variant="outlined" color="error">
+          Cancelar
+        </Button>
+      </NavLink>
+      <Button type="submit" variant="contained">
+        {type === 'create' ? "Cadastrar" : "Editar"}
+      </Button>
+    </WrapperButtons>
+  );
+}
+
 export const CreateCustomerPresentation = ({
   customerService: services,
   onCreateIndividualCustomer,
@@ -45,6 +71,8 @@ export const CreateCustomerPresentation = ({
   const [hasRadioContribuition, setHasRadioContribuition] = useState("Sim");
   const [stateCustomerCorporateLiving, setStateCustomerCorporateLiving] =
     useState<TypeUFOption>({} as TypeUFOption);
+  const [observationFormComporate, setObservationFormComporate] =
+    useState<string>("");
 
   // individual states
   const [hasMaritalStatus, setHasMaritalStatus] = useState<TypeMaritalStatus>(
@@ -54,32 +82,11 @@ export const CreateCustomerPresentation = ({
     useState<TypeUFOption>({} as TypeUFOption);
   const [stateCustomerIndividualLiving, setStateCustomerInidividualLiving] =
     useState<TypeUFOption>({} as TypeUFOption);
+  const [observationFormIndividual, setObservationFormIndividual] =
+    useState<string>("");
 
   const formCorporate = useFormik({
-    initialValues: {
-      razaoSocial: "",
-      nomeFantasia: "",
-      cnpj: "",
-      ativo: false,
-      contribuinte: "",
-      inscricaoEstadual: "",
-      inscricaoMunicipal: "",
-      email: "",
-      nomeResponsavel: "",
-      cpf: "",
-      dataNascimento: "",
-      telefone: "",
-      celular: "",
-      emailResponsavel: "",
-      cep: "",
-      cidade: "",
-      uf: "",
-      endereco: "",
-      numero: "",
-      complemento: "",
-      bairro: "",
-      observacao: "",
-    },
+    initialValues: initialValuesFormCorporate,
     validationSchema: createOrUpdateCorporateCustomer,
     onSubmit: async (values) => {
       console.log(values);
@@ -88,36 +95,14 @@ export const CreateCustomerPresentation = ({
         ...values,
         ativo: isCheckboxCorporateActive,
         contribuinte: hasRadioContribuition,
-        uf: stateCustomerCorporateLiving.value
+        uf: stateCustomerCorporateLiving.value,
+        observacao: observationFormComporate,
       } as ICorporateCustomerGeneral);
     },
   });
 
   const formIndividual = useFormik({
-    initialValues: {
-      nome: "",
-      apelido: "",
-      cpf: "",
-      dataNascimento: "",
-      estadoCivil: "",
-      rg: "",
-      orgaoEmissor: "",
-      ufRg: "",
-      cnh: "",
-      seguranca: "",
-      cei: "",
-      email: "",
-      telefone: "",
-      celular: "",
-      cep: "",
-      cidade: "",
-      uf: "",
-      endereco: "",
-      numero: "",
-      complemento: "",
-      bairro: "",
-      observacao: "",
-    },
+    initialValues: initialValuesFormIndividual,
     validationSchema: createOrUpdateIndividualCustomer,
     onSubmit: async (values) => {
       console.log(values);
@@ -127,77 +112,86 @@ export const CreateCustomerPresentation = ({
         estadoCivil: hasMaritalStatus.value,
         ufRg: stateDocumentIdentification.value,
         uf: stateCustomerIndividualLiving.value,
+        observacao: observationFormIndividual,
       } as IIndividualCustomerGeneral);
     },
   });
 
   function handleChangeTypeCustomer(title: string) {
-    setWhatKindOfPerson(title)
+    setWhatKindOfPerson(title);
 
     formCorporate.resetForm();
-    formCorporate.setErrors({})
+    formCorporate.setErrors({});
 
     formIndividual.resetForm();
-    formIndividual.setErrors({})
+    formIndividual.setErrors({});
   }
 
   return (
     <div>
       <Header title="Cadastro / Clientes / Cadastrar Clientes" />
 
-      <h1>Adicionar Novo Cliente</h1>
+      <WrapperForm>
+        <h1>Adicionar Novo Cliente</h1>
 
-      <WrapperTypePerson>
+        <WrapperTypePerson>
+          <div>
+            {notificationMethods.map(({ id, name, title }) => (
+              <Checkbox
+                key={id}
+                id={id}
+                name={name}
+                type="radio"
+                label={title}
+                checked={whatKindOfPerson === title}
+                onChange={() => handleChangeTypeCustomer(title)}
+              />
+            ))}
+          </div>
+        </WrapperTypePerson>
+
         <div>
-          {notificationMethods.map(({ id, name, title }) => (
-            <Checkbox
-              key={id}
-              id={id}
-              name={name}
-              type="radio"
-              label={title}
-              checked={whatKindOfPerson === title}
-              onChange={() => handleChangeTypeCustomer(title)}
-            />
-          ))}
+          {whatKindOfPerson === "Pessoa Jurídica" ? (
+            <form onSubmit={formCorporate.handleSubmit}>
+              <FormCoporate
+                values={formCorporate.values}
+                handleChange={formCorporate.handleChange}
+                touched={formCorporate.touched}
+                errors={formCorporate.errors}
+                isCheckboxCorporateActive={isCheckboxCorporateActive}
+                setIsCheckboxCorporateActive={setIsCheckboxCorporateActive}
+                hasRadioContribuition={hasRadioContribuition}
+                setHasRadioContribuition={setHasRadioContribuition}
+                stateCustomerCorporateLiving={stateCustomerCorporateLiving}
+                setStateCustomerCorporateLiving={
+                  setStateCustomerCorporateLiving
+                }
+                observationFormComporate={observationFormComporate}
+                setObservationFormComporate={setObservationFormComporate}
+              />
+              <ButtonsForm type="create" />
+            </form>
+          ) : (
+            <form onSubmit={formIndividual.handleSubmit}>
+              <FormIndividual
+                values={formIndividual.values}
+                handleChange={formIndividual.handleChange}
+                touched={formIndividual.touched}
+                errors={formIndividual.errors}
+                hasMaritalStatus={hasMaritalStatus}
+                setHasMaritalStatus={setHasMaritalStatus}
+                stateDocumentIdentification={stateDocumentIdentification}
+                setStateDocumentIdentification={setStateDocumentIdentification}
+                stateCustomerLiving={stateCustomerIndividualLiving}
+                setStateCustomerLiving={setStateCustomerInidividualLiving}
+                observationFormIndividual={observationFormIndividual}
+                setObservationFormIndividual={setObservationFormIndividual}
+              />
+              <ButtonsForm type="create" />
+            </form>
+          )}
         </div>
-      </WrapperTypePerson>
-
-      <div>
-        {whatKindOfPerson === "Pessoa Jurídica" ? (
-          <form onSubmit={formCorporate.handleSubmit}>
-            <FormCoporate
-              values={formCorporate.values}
-              handleChange={formCorporate.handleChange}
-              touched={formCorporate.touched}
-              errors={formCorporate.errors}
-              isCheckboxCorporateActive={isCheckboxCorporateActive}
-              setIsCheckboxCorporateActive={setIsCheckboxCorporateActive}
-              hasRadioContribuition={hasRadioContribuition}
-              setHasRadioContribuition={setHasRadioContribuition}
-              stateCustomerCorporateLiving={stateCustomerCorporateLiving}
-              setStateCustomerCorporateLiving={setStateCustomerCorporateLiving}
-            />
-            <button type="submit">Enviar</button>
-          </form>
-        ) : (
-          <form onSubmit={formIndividual.handleSubmit}>
-            <FormIndividual
-              values={formIndividual.values}
-              handleChange={formIndividual.handleChange}
-              touched={formIndividual.touched}
-              errors={formIndividual.errors}
-              hasMaritalStatus={hasMaritalStatus}
-              setHasMaritalStatus={setHasMaritalStatus}
-              stateDocumentIdentification={stateDocumentIdentification}
-              setStateDocumentIdentification={setStateDocumentIdentification}
-              stateCustomerLiving={stateCustomerIndividualLiving}
-              setStateCustomerLiving={setStateCustomerInidividualLiving}
-            />
-            <button type="submit">Enviar</button>
-          </form>
-        )}
-      </div>
+      </WrapperForm>
     </div>
   );
 };

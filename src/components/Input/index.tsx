@@ -29,7 +29,7 @@ import {
   onlyLetters
 } from "./masks";
 
-interface Input {
+export interface IInput {
   errorMessage?: string;
   sucessMessage?: string;
   alertMessage?: string;
@@ -37,7 +37,7 @@ interface Input {
   style?: React.CSSProperties;
 }
 export interface InputProps
-  extends Input,
+  extends IInput,
     React.InputHTMLAttributes<HTMLInputElement> {
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;

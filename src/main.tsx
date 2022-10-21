@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { ThemeProvider } from "styled-components";
@@ -14,8 +13,6 @@ import { CustomerService } from "./domain/Customer/services/CustomerService";
 import { HomePage } from "./pages/Home";
 import { CreateCustomerPage } from "./pages/Create";
 import { EditCustomerPage } from "./pages/Edit";
-
-const queryClient = new QueryClient();
 
 const customerService = new CustomerService(
   httpClient({ baseURL: "http://localhost:1234" })
@@ -39,10 +36,8 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <GlobalStyle />
-      </QueryClientProvider>
+      <RouterProvider router={router} />
+      <GlobalStyle />
     </ThemeProvider>
   </React.StrictMode>
 );
