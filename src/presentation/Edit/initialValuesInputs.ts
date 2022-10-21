@@ -1,0 +1,53 @@
+export function valuesInputEditCorporate(customerToEdit: any) {
+  return {
+    razaoSocial: customerToEdit?.razaoSocial,
+    nomeFantasia: customerToEdit?.nomeFantasia,
+    cnpj: customerToEdit?.cnpj,
+    ativo: customerToEdit?.ativo,
+    contribuinte: customerToEdit?.contribuinte,
+    inscricaoEstadual: customerToEdit?.inscricaoEstadual,
+    inscricaoMunicipal: customerToEdit?.inscricaoMunicipal,
+    email: customerToEdit?.email,
+    nomeResponsavel: customerToEdit?.nomeResponsavel,
+    cpf: customerToEdit?.cpf,
+    dataNascimento: customerToEdit?.dataNascimento,
+    telefone: customerToEdit?.telefone,
+    celular: customerToEdit?.celular,
+    emailResponsavel: customerToEdit?.emailResponsavel,
+    cep: customerToEdit?.cep,
+    cidade: customerToEdit?.cidade,
+    uf: customerToEdit?.uf,
+    endereco: customerToEdit?.endereco,
+    numero: customerToEdit?.numero,
+    complemento: customerToEdit?.complemento,
+    bairro: customerToEdit?.bairro,
+    observacao: customerToEdit?.observacao,
+  };
+}
+
+export function valuesInputEditIndividual(customerToEdit: any) {
+  return {
+    nome: customerToEdit?.nome,
+    apelido: customerToEdit?.apelido,
+    cpf: customerToEdit?.cpf,
+    dataNascimento: customerToEdit?.dataNascimento,
+    estadoCivil: customerToEdit?.estadoCivil,
+    rg: customerToEdit?.rg,
+    orgaoEmissor: customerToEdit?.orgaoEmissor,
+    ufRg: customerToEdit?.ufRg,
+    cnh: customerToEdit?.cnh,
+    seguranca: customerToEdit?.seguranca,
+    cei: customerToEdit?.cei,
+    email: customerToEdit?.email,
+    telefone: customerToEdit?.telefone,
+    celular: customerToEdit?.celular,
+    cep: customerToEdit?.cep,
+    cidade: customerToEdit?.cidade,
+    uf: customerToEdit?.uf,
+    endereco: customerToEdit?.endereco,
+    numero: customerToEdit?.numero,
+    complemento: customerToEdit?.complemento,
+    bairro: customerToEdit?.bairro,
+    observacao: customerToEdit?.observacao,
+  };
+}
