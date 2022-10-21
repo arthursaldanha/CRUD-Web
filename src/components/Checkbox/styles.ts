@@ -24,7 +24,7 @@ export const Label = styled.label<CheckboxProps>`
   position: relative;
   display: flex;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
-  margin: 1em;
+  margin: 0.5rem;
   font-size: 16px;
   width: fit-content;
 `;

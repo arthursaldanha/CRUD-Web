@@ -129,7 +129,7 @@ export const HomePresentation = ({
                           text={razaoSocial || nome}
                           toHighlight={hasSearchItemsInTable}
                           variant="h7"
-                          weight="medium"
+                          weight="semibold"
                           color={colors.black}
                         />
                       </Text>

@@ -7,6 +7,8 @@ import { TypeUFOption } from "../..";
 import { ComboBoxSingleSelect } from "../../../../components/ComboBox";
 import { ufOptions } from "../../../../domain/Customer/models/common";
 
+import { WrapperFormCoporate } from "./styles";
+
 const contribuitions = [
   { id: "hascontribuiton", name: "type-contribuiton", title: "Sim" },
   { id: "hasntcontribuiton", name: "type-contribuiton", title: "Não" },
@@ -41,54 +43,60 @@ export const FormCoporate = ({
   setStateCustomerCorporateLiving,
 }: IFormCoporate) => {
   return (
-    <div>
-      <Input
-        type="text"
-        name="razaoSocial"
-        placeholder="Razão Social"
-        value={values?.razaoSocial}
-        onChange={handleChange}
-        errorMessage={touched?.razaoSocial ? errors?.razaoSocial : ""}
-      />
-      <Input
-        type="text"
-        name="nomeFantasia"
-        placeholder="Nome Fantasia"
-        value={values?.nomeFantasia}
-        onChange={handleChange}
-        errorMessage={touched?.nomeFantasia ? errors?.nomeFantasia : ""}
-      />
-      <Checkbox
-        type="checkbox"
-        label="Ativo"
-        checked={isCheckboxCorporateActive}
-        onChange={() =>
-          setIsCheckboxCorporateActive(!isCheckboxCorporateActive)
-        }
-      />
+    <WrapperFormCoporate>
+      <div className="grid grid-common first-case">
+        <Input
+          type="text"
+          name="razaoSocial"
+          placeholder="Razão Social"
+          value={values?.razaoSocial}
+          onChange={handleChange}
+          errorMessage={touched?.razaoSocial ? errors?.razaoSocial : ""}
+        />
+        <Input
+          type="text"
+          name="nomeFantasia"
+          placeholder="Nome Fantasia"
+          value={values?.nomeFantasia}
+          onChange={handleChange}
+          errorMessage={touched?.nomeFantasia ? errors?.nomeFantasia : ""}
+        />
+        <Checkbox
+          type="checkbox"
+          label="Ativo"
+          checked={isCheckboxCorporateActive}
+          onChange={() =>
+            setIsCheckboxCorporateActive(!isCheckboxCorporateActive)
+          }
+        />
+      </div>
 
-      <Input
-        type="text"
-        name="cnpj"
-        placeholder="CNPJ"
-        value={values?.cnpj}
-        onChange={handleChange}
-        errorMessage={touched?.cnpj ? errors?.cnpj : ""}
-        mask="cnpj"
-      />
-      <div>
-        <p>Contribuinte</p>
-        {contribuitions.map(({ id, name, title }) => (
-          <Checkbox
-            key={id}
-            id={id}
-            name={name}
-            type="radio"
-            label={title}
-            checked={hasRadioContribuition === title}
-            onChange={() => setHasRadioContribuition(title)}
-          />
-        ))}
+      <div className="grid grid-common second-case">
+        <Input
+          type="text"
+          name="cnpj"
+          placeholder="CNPJ"
+          value={values?.cnpj}
+          onChange={handleChange}
+          errorMessage={touched?.cnpj ? errors?.cnpj : ""}
+          mask="cnpj"
+        />
+        <div>
+          <p>Contribuinte</p>
+          <div className="radio-options">
+            {contribuitions.map(({ id, name, title }) => (
+              <Checkbox
+                key={id}
+                id={id}
+                name={name}
+                type="radio"
+                label={title}
+                checked={hasRadioContribuition === title}
+                onChange={() => setHasRadioContribuition(title)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <Input
@@ -239,6 +247,6 @@ export const FormCoporate = ({
         onChange={handleChange}
         errorMessage={touched?.bairro ? errors?.bairro : ""}
       />
-    </div>
+    </WrapperFormCoporate>
   );
 };
