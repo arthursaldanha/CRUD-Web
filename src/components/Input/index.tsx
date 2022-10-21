@@ -25,6 +25,8 @@ import {
   currency,
   phone,
   data,
+  onlyNumbers,
+  onlyLetters
 } from "./masks";
 
 interface Input {
@@ -41,15 +43,17 @@ export interface InputProps
   endIcon?: React.ReactNode;
   inputButton?: boolean;
   mask?:
-    | 'cep'
-    | 'currency'
-    | 'cpf'
-    | 'cnpj'
-    | 'cpf_cnpj'
-    | 'card'
-    | 'cvv'
-    | 'phone'
-    | 'data';
+    | "cep"
+    | "currency"
+    | "cpf"
+    | "cnpj"
+    | "cpf_cnpj"
+    | "card"
+    | "cvv"
+    | "phone"
+    | "data"
+    | "onlyNumbers"
+    | "onlyLetters";
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -87,6 +91,8 @@ export const Input: React.FC<InputProps> = ({
     cep: cep,
     phone: phone,
     data: data,
+    onlyNumbers: onlyNumbers,
+    onlyLetters: onlyLetters
   };
 
   useEffect(() => {
