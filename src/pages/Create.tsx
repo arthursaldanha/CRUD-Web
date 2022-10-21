@@ -1,8 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { CreateCustomerPresentation } from "../presentation/Create";
 
-import { IIndividualCustomerGeneral, ICorporateCustomerGeneral } from "../domain/Customer/models";
+import {
+  IIndividualCustomerGeneral,
+  ICorporateCustomerGeneral,
+} from "../domain/Customer/models";
 import { CustomerServiceSkeleton } from "../domain/Customer/services/implementations/CustomerServiceSkeleton";
 
 interface ICreatePageProps {
@@ -20,10 +24,21 @@ export const CreateCustomerPage = ({ customerService }: ICreatePageProps) => {
         type: "PF",
         ...values,
       });
-
       navigate("/");
+      toast.success("Cliente criado com sucesso!", {
+        position: "top-right",
+        progress: undefined,
+        theme: "light",
+      });
     } catch (err) {
-      console.log(err);
+      toast.error(
+        "Não foi possível criar o cliente. Tente novamente mais tarde!",
+        {
+          position: "top-right",
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   }
 
@@ -33,10 +48,21 @@ export const CreateCustomerPage = ({ customerService }: ICreatePageProps) => {
         type: "PJ",
         ...values,
       });
-
       navigate("/");
+      toast.success("Cliente criado com sucesso!", {
+        position: "top-right",
+        progress: undefined,
+        theme: "light",
+      });
     } catch (err) {
-      console.log(err);
+      toast.error(
+        "Não foi possível criar o cliente. Tente novamente mais tarde!",
+        {
+          position: "top-right",
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   }
 

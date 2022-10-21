@@ -1,7 +1,6 @@
 {
   "customers": [
     {
-      "type": "PF",
       "nome": "Pedro Gustavo",
       "apelido": "Analu",
       "cpf": "232.100.849-04",
@@ -24,6 +23,7 @@
       "complemento": "Casa",
       "bairro": "Nossa Senhora Aparecida",
       "observacao": "",
+      "type": "PF",
       "id": 1
     },
     {

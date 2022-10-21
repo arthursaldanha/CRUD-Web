@@ -7,6 +7,9 @@ import { ThemeProvider } from "styled-components";
 import { GlobalStyle } from "./styles/global";
 import theme from "./styles/theme";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { httpClient } from "./infra/AxiosHttpClient";
 import { CustomerService } from "./domain/Customer/services/CustomerService";
 
@@ -35,6 +38,7 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
+    <ToastContainer />
     <ThemeProvider theme={theme}>
       <RouterProvider router={router} />
       <GlobalStyle />

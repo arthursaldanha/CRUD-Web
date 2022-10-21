@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { EditCustomerPresentation } from "../presentation/Edit";
 
@@ -30,7 +30,14 @@ export const EditCustomerPage = ({ customerService }: IEditPageProps) => {
       const customers = await customerService.readUniqueCustomer(customerId);
       setCustomerToEdit(customers);
     } catch (error) {
-      console.log(error);
+      toast.error(
+        "Houve algum erro ao tentar carregar os dados do cliente. Tente novamente mais tarde!",
+        {
+          position: "top-right",
+          progress: undefined,
+          theme: "light",
+        }
+      );
     } finally {
       setIsLoadingCustomerToEdit(false);
     }
@@ -42,10 +49,21 @@ export const EditCustomerPage = ({ customerService }: IEditPageProps) => {
   ) {
     try {
       await customerService.updateIndividualCustomer(customerId, values);
-
       navigate("/");
-    } catch (err) {
-      console.log(err);
+      toast.success("Cliente editado com sucesso!", {
+        position: "top-right",
+        progress: undefined,
+        theme: "light",
+      });
+    } catch {
+      toast.error(
+        "Houve algum erro ao tentar editar. Tente novamente mais tarde!",
+        {
+          position: "top-right",
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   }
 
@@ -55,10 +73,21 @@ export const EditCustomerPage = ({ customerService }: IEditPageProps) => {
   ) {
     try {
       await customerService.updateCorporateCustomer(customerId, values);
-
       navigate("/");
-    } catch (err) {
-      console.log(err);
+      toast.success("Cliente editado com sucesso!", {
+        position: "top-right",
+        progress: undefined,
+        theme: "light",
+      });
+    } catch {
+      toast.error(
+        "Houve algum erro ao tentar editar. Tente novamente mais tarde!",
+        {
+          position: "top-right",
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   }
 
