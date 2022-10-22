@@ -6,6 +6,13 @@ interface LabelProps {
   startIcon?: boolean;
 }
 
+export const WrapperGeneral = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+`;
+
 export const Label = styled.label<LabelProps>`
   ${({ theme: { colors, typography }, value, isFocused, startIcon }) => css`
     position: absolute;

@@ -1,15 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import { Label, Container, SvgStart } from "./styles";
-import SelectComponent, { StylesConfig } from "react-select";
 import { useTheme } from "styled-components";
+import SelectComponent, { StylesConfig } from "react-select";
+import { CloseCircle, TickCircle, InfoCircle } from "iconsax-react";
+
+import { Text } from "../Text";
+import { IInput } from "../Input";
+
+import { WrapperGeneral, Label, Container, SvgStart } from "./styles";
+import { ContainerText } from "../Input/styles";
 
 interface InputSelectItem {
   value: string | number;
   label: string;
 }
 
-export interface DropdownProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DropdownProps
+  extends IInput,
+    React.HTMLAttributes<HTMLDivElement> {
   items?: InputSelectItem[];
   onChange?: (values: any) => void;
   value?: any;
@@ -27,6 +35,10 @@ export const ComboBoxSingleSelect: React.FC<DropdownProps> = ({
   startIcon,
   name,
   required,
+  sucessMessage,
+  errorMessage,
+  alertMessage,
+  infoMessage,
   ...props
 }) => {
   const { colors, typography } = useTheme();
@@ -44,10 +56,14 @@ export const ComboBoxSingleSelect: React.FC<DropdownProps> = ({
       borderRadius: "8px",
       border: isFocused
         ? `1px solid ${colors.green2}`
+        : errorMessage
+        ? `1ps solid ${colors.error}`
         : `1px solid ${colors.grey5}`,
       "&:hover": {
         border: isFocused
           ? `1px solid ${colors.green2}`
+          : errorMessage
+          ? `1ps solid ${colors.error}`
           : `1px solid ${colors.grey5}`,
       },
       paddingLeft: startIcon ? "34px" : "2px",
@@ -84,32 +100,84 @@ export const ComboBoxSingleSelect: React.FC<DropdownProps> = ({
   };
 
   return (
-    <Container {...props}>
-      <SelectComponent
-        onBlur={() => setIsFocused(false)}
-        onFocus={() => setIsFocused(true)}
-        value={value}
-        options={items}
-        styles={customStyles}
-        isSearchable
-        onChange={handleChange}
-        placeholder=""
-        components={{
-          IndicatorSeparator: () => null,
-        }}
-        noOptionsMessage={() => "Nenhuma opção restante"}
-        name={name}
-        id={name}
-      />
-      <Label
-        isFocused={isFocused}
-        value={value?.value ? true : false}
-        startIcon={startIcon ? true : false}
-        htmlFor={name}
-      >
-        {`${placeholder} ${required ? "*" : ""}`}
-      </Label>
-      {startIcon && <SvgStart isFocused={isFocused}>{startIcon}</SvgStart>}
-    </Container>
+    <WrapperGeneral>
+      <Container {...props}>
+        <SelectComponent
+          onBlur={() => setIsFocused(false)}
+          onFocus={() => setIsFocused(true)}
+          value={value}
+          options={items}
+          styles={customStyles}
+          isSearchable
+          onChange={handleChange}
+          placeholder=""
+          components={{
+            IndicatorSeparator: () => null,
+          }}
+          noOptionsMessage={() => "Nenhuma opção restante"}
+          name={name}
+          id={name}
+        />
+        <Label
+          isFocused={isFocused}
+          value={value?.value ? true : false}
+          startIcon={startIcon ? true : false}
+          htmlFor={name}
+        >
+          {`${placeholder} ${required ? "*" : ""}`}
+        </Label>
+        {startIcon && <SvgStart isFocused={isFocused}>{startIcon}</SvgStart>}
+      </Container>
+      {(sucessMessage || errorMessage || alertMessage || infoMessage) && (
+        <ContainerText data-testid="c-info">
+          {sucessMessage ? (
+            <TickCircle
+              color={colors.success}
+              variant="Bold"
+              size={12}
+              style={{ marginRight: "5px", marginTop: "1px" }}
+              data-testid="svgInfoSuccess"
+            />
+          ) : errorMessage ? (
+            <CloseCircle
+              color={colors.error}
+              variant="Bold"
+              size={12}
+              style={{ marginRight: "5px", marginTop: "1px" }}
+              data-testid="svgInfoError"
+            />
+          ) : alertMessage ? (
+            <InfoCircle
+              color={colors.alert}
+              variant="Bold"
+              size={12}
+              style={{ marginRight: "5px", marginTop: "1px" }}
+              data-testid="svgInfoAlert"
+            />
+          ) : (
+            <InfoCircle
+              color={colors.grey4}
+              variant="Outline"
+              size={12}
+              style={{ marginRight: "5px", marginTop: "1px" }}
+              data-testid="svgInfo"
+            />
+          )}
+          <Text
+            variant="h9"
+            weight="medium"
+            color={
+              sucessMessage
+                ? colors.success
+                : errorMessage
+                ? colors.error
+                : colors.grey1
+            }
+          >
+            {sucessMessage || errorMessage || alertMessage || infoMessage || ""}
+          </Text>
+        </ContainerText>
+      )}
+    </WrapperGeneral>
   );
 };

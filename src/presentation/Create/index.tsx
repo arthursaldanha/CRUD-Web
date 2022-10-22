@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useFormik } from "formik";
 
-import { Button, Checkbox, Header  } from "../../components";
+import { Button, Checkbox, Header } from "../../components";
 
 import { FormCoporate } from "./Steps/Corporate";
 import { FormIndividual } from "./Steps/Individual";
@@ -21,7 +21,10 @@ import {
   createOrUpdateIndividualCustomer,
 } from "../../domain/Customer/validations";
 
-import { initialValuesFormCorporate, initialValuesFormIndividual } from "./initialValues";
+import {
+  initialValuesFormCorporate,
+  initialValuesFormIndividual,
+} from "./initialValues";
 
 import { WrapperButtons, WrapperForm, WrapperTypePerson } from "./styles";
 
@@ -40,7 +43,7 @@ interface ICreatePresentationProps {
 }
 
 interface IButtonsFormProps {
-  type: 'create' | 'edit'
+  type: "create" | "edit";
 }
 
 export function ButtonsForm({ type }: IButtonsFormProps) {
@@ -52,14 +55,13 @@ export function ButtonsForm({ type }: IButtonsFormProps) {
         </Button>
       </NavLink>
       <Button type="submit" variant="contained">
-        {type === 'create' ? "Cadastrar" : "Editar"}
+        {type === "create" ? "Cadastrar" : "Editar"}
       </Button>
     </WrapperButtons>
   );
 }
 
 export const CreateCustomerPresentation = ({
-  customerService: services,
   onCreateIndividualCustomer,
   onCreateCorporateCustomer,
 }: ICreatePresentationProps) => {
@@ -73,6 +75,8 @@ export const CreateCustomerPresentation = ({
     useState<TypeUFOption>({} as TypeUFOption);
   const [observationFormComporate, setObservationFormComporate] =
     useState<string>("");
+  const [hasErrorInComboBoxUFCorpotate, setHasErrorInComboBoxUFCorpotate] =
+    useState("");
 
   // individual states
   const [hasMaritalStatus, setHasMaritalStatus] = useState<TypeMaritalStatus>(
@@ -84,12 +88,17 @@ export const CreateCustomerPresentation = ({
     useState<TypeUFOption>({} as TypeUFOption);
   const [observationFormIndividual, setObservationFormIndividual] =
     useState<string>("");
+  const [hasErrorInComboBoxUFIndividual, setHasErrorInComboBoxUFIndividual] =
+    useState("");
 
   const formCorporate = useFormik({
     initialValues: initialValuesFormCorporate,
     validationSchema: createOrUpdateCorporateCustomer,
     onSubmit: async (values) => {
-      console.log(values);
+      if (!stateCustomerCorporateLiving?.value) {
+        setHasErrorInComboBoxUFCorpotate("Campo obrigatório!");
+        return;
+      }
 
       await onCreateCorporateCustomer({
         ...values,
@@ -101,11 +110,18 @@ export const CreateCustomerPresentation = ({
     },
   });
 
+  useEffect(() => {
+    if (stateCustomerCorporateLiving) setHasErrorInComboBoxUFCorpotate("");
+  }, [stateCustomerCorporateLiving]);
+
   const formIndividual = useFormik({
     initialValues: initialValuesFormIndividual,
     validationSchema: createOrUpdateIndividualCustomer,
     onSubmit: async (values) => {
-      console.log(values);
+      if (!stateCustomerIndividualLiving?.value) {
+        setHasErrorInComboBoxUFIndividual("Campo obrigatório!");
+        return;
+      }
 
       await onCreateIndividualCustomer({
         ...values,
@@ -117,12 +133,14 @@ export const CreateCustomerPresentation = ({
     },
   });
 
+  useEffect(() => {
+    if (stateCustomerIndividualLiving) setHasErrorInComboBoxUFCorpotate("");
+  }, [stateCustomerIndividualLiving]);
+
   function handleChangeTypeCustomer(title: string) {
     setWhatKindOfPerson(title);
-
     formCorporate.resetForm();
     formCorporate.setErrors({});
-
     formIndividual.resetForm();
     formIndividual.setErrors({});
   }
@@ -168,6 +186,7 @@ export const CreateCustomerPresentation = ({
                 }
                 observationFormComporate={observationFormComporate}
                 setObservationFormComporate={setObservationFormComporate}
+                hasErrorInComboBoxUFCorpotate={hasErrorInComboBoxUFCorpotate}
               />
               <ButtonsForm type="create" />
             </form>
@@ -186,6 +205,7 @@ export const CreateCustomerPresentation = ({
                 setStateCustomerLiving={setStateCustomerInidividualLiving}
                 observationFormIndividual={observationFormIndividual}
                 setObservationFormIndividual={setObservationFormIndividual}
+                hasErrorInComboBoxUFIndividual={hasErrorInComboBoxUFIndividual}
               />
               <ButtonsForm type="create" />
             </form>

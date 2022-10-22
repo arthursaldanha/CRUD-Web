@@ -28,6 +28,8 @@ interface IFormIndividual {
 
   observationFormIndividual: string;
   setObservationFormIndividual: (state: string) => void;
+
+  hasErrorInComboBoxUFIndividual: string;
 }
 
 export const FormIndividual = ({
@@ -42,7 +44,8 @@ export const FormIndividual = ({
   stateCustomerLiving,
   setStateCustomerLiving,
   observationFormIndividual,
-  setObservationFormIndividual
+  setObservationFormIndividual,
+  hasErrorInComboBoxUFIndividual,
 }: IFormIndividual) => {
   return (
     <WrapperFormIndividual>
@@ -207,6 +210,7 @@ export const FormIndividual = ({
           placeholder="UF"
           value={stateCustomerLiving}
           onChange={setStateCustomerLiving}
+          errorMessage={hasErrorInComboBoxUFIndividual}
         />
       </div>
 

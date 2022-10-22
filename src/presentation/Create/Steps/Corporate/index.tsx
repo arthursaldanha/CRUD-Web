@@ -30,6 +30,8 @@ interface IFormCoporate {
 
   observationFormComporate: string;
   setObservationFormComporate: (state: string) => void;
+
+  hasErrorInComboBoxUFCorpotate: string;
 }
 
 export const FormCoporate = ({
@@ -45,6 +47,7 @@ export const FormCoporate = ({
   setStateCustomerCorporateLiving,
   observationFormComporate,
   setObservationFormComporate,
+  hasErrorInComboBoxUFCorpotate,
 }: IFormCoporate) => {
   return (
     <WrapperFormCoporate>
@@ -225,6 +228,7 @@ export const FormCoporate = ({
           placeholder="UF"
           value={stateCustomerCorporateLiving}
           onChange={setStateCustomerCorporateLiving}
+          errorMessage={hasErrorInComboBoxUFCorpotate}
         />
       </div>
 
